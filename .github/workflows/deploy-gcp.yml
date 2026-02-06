@@ -1,5 +1,5 @@
 # Deploy to Google Cloud on push to main
-# Requires GitHub secrets: GCP_PROJECT_ID, GCP_SA_KEY (or WIF), FIREBASE_TOKEN
+# Requires GitHub secrets: GCP_PROJECT_ID, GCP_SA_KEY, FIREBASE_PROJECT_ID, FIREBASE_TOKEN
 
 name: Deploy to GCP
 
@@ -37,6 +37,10 @@ jobs:
             --region europe-west1 \
             --allow-unauthenticated \
             --set-env-vars "CORS_ORIGINS=*" \
+            --memory 2Gi \
+            --cpu 2 \
+            --timeout 300 \
+            --cpu-boost \
             --quiet
 
       - name: Get backend URL
@@ -63,16 +67,19 @@ jobs:
       - name: Deploy frontend to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting --non-interactive
+          args: deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID }} --non-interactive
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
       - name: Update backend CORS
         env:
-          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
+          CORS_VAL="https://${FIREBASE_PROJECT_ID}.web.app,https://${FIREBASE_PROJECT_ID}.firebaseapp.com"
+          echo "CORS_ORIGINS: \"$CORS_VAL\"" > /tmp/cors-env.yml
           gcloud run services update video-image-api \
-            --project $PROJECT_ID \
+            --project $GCP_PROJECT_ID \
             --region europe-west1 \
-            --set-env-vars "CORS_ORIGINS=https://$PROJECT_ID.web.app,https://$PROJECT_ID.firebaseapp.com" \
+            --env-vars-file /tmp/cors-env.yml \
             --quiet

@@ -24,7 +24,7 @@ Project uses **europe-west1** (Belgium). Other options: `europe-west4` (Netherla
 ```bash
 ./setup-gcp-europe.sh
 firebase login
-firebase use video-image-processing-eu  # or firebase use --add
+firebase use video-image-processing-e-30530  # Firebase project for Hosting
 ```
 
 **Individual deploys:**
@@ -47,12 +47,15 @@ BACKEND_URL=https://video-image-api-xxx.run.app ./deploy-frontend-europe.sh
 
 `.github/workflows/deploy-gcp.yml` deploys on push to `main`.
 
+**Important:** Never commit `key.json`, `GCP_SA_KEY` contents, or `.env` files. They are in `.gitignore`.
+
 **Secrets** (Settings → Secrets and variables → Actions):
 
 | Secret | Description |
 |--------|-------------|
-| `GCP_PROJECT_ID` | Your GCP project ID (e.g. `video-image-processing-eu`) |
-| `GCP_SA_KEY` | Service account JSON key with Cloud Run + Cloud Build roles |
+| `GCP_PROJECT_ID` | GCP project for Cloud Run backend (e.g. `video-image-processing-eu`) |
+| `FIREBASE_PROJECT_ID` | Firebase project for Hosting (e.g. `video-image-processing-e-30530`) |
+| `GCP_SA_KEY` | Service account JSON key from `github-actions@GCP_PROJECT_ID.iam.gserviceaccount.com` |
 | `FIREBASE_TOKEN` | `firebase login:ci` token for Firebase Hosting deploy |
 
 **Alternative:** Cloud Build trigger using `cloudbuild.yaml` (backend only).

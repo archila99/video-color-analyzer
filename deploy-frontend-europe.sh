@@ -17,9 +17,10 @@ cd frontend
 VITE_API_URL="$BACKEND_URL" npm run build
 cd ..
 
-echo "Deploying to Firebase Hosting..."
-firebase deploy --only hosting
+FIREBASE_PROJECT_ID="${FIREBASE_PROJECT_ID:-video-image-processing-e-30530}"
+echo "Deploying to Firebase Hosting (project: $FIREBASE_PROJECT_ID)..."
+firebase deploy --only hosting --project "$FIREBASE_PROJECT_ID"
 
 echo ""
-echo "Frontend deployed. Update backend CORS with your Firebase URL:"
-echo "  gcloud run services update video-image-api --region europe-west1 --set-env-vars CORS_ORIGINS=https://YOUR_PROJECT.web.app"
+echo "Frontend deployed to https://${FIREBASE_PROJECT_ID}.web.app"
+echo "To update backend CORS, run: ./deploy-all-europe.sh (or re-run step 4)"

@@ -146,20 +146,20 @@ export function SmartPhotoSorter() {
               {files.length > 0 ? (
                 <p className="has-file">{files.length} image(s) selected</p>
               ) : (
-                <>
-                  <p>Click to select images</p>
+                <p>
+                  Tap to select images{' '}
                   <button
                     type="button"
-                    className="link-btn"
+                    className="link-btn inline"
                     onClick={(e) => {
                       e.stopPropagation()
                       folderInputRef.current?.click()
                     }}
                     disabled={!!loading}
                   >
-                    or select folder
+                    or folder
                   </button>
-                </>
+                </p>
               )}
             </div>
           </div>

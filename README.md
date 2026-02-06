@@ -2,14 +2,16 @@
 
 A unified web application combining **Video Frame Extractor** and **Image Identifier**. Built with FastAPI (Python) backend and React/TypeScript frontend.
 
+**Live:** [video-image-processing-e-30530.web.app](https://video-image-processing-e-30530.web.app)
+
 ## Features
 
 ### Video Frame Extractor
-- Automatic video duration detection
+- Automatic video duration detection (MoviePy/ffmpeg – HEVC, MOV, MP4)
 - Time range with validation (start, end, video duration)
 - Configurable frame interval (steps of 0.2s)
 - Optional overlay timestamp and shadow removal
-- Download extracted frames as ZIP
+- Download extracted frames as ZIP (max 500 frames per request)
 
 ### Image Identifier
 - Single or multiple image analysis
@@ -80,6 +82,12 @@ video-image-processing/
 │   │   └── components/
 │   └── package.json
 ├── requirements.txt
+├── Dockerfile
+├── firebase.json
+├── deploy-all-europe.sh
+├── deploy-backend-europe.sh
+├── deploy-frontend-europe.sh
+├── setup-gcp-europe.sh
 ├── start_backend.sh
 ├── start_frontend.sh
 └── README.md
@@ -95,7 +103,27 @@ video-image-processing/
 
 See [DEPLOY.md](./DEPLOY.md) for details and GitHub Actions CI/CD.
 
+## Pushing to GitHub
+
+**Before pushing, ensure you never commit:**
+- `key.json` or any service account keys
+- `.env` or `.env.local` files
+- Firebase tokens or credentials
+
+These are already in `.gitignore`. To push:
+```bash
+git add .
+git status   # verify no secrets listed
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/video-image-processing.git
+git push -u origin main
+```
+
+For GitHub Actions, add secrets: `GCP_PROJECT_ID`, `GCP_SA_KEY`, `FIREBASE_PROJECT_ID`, `FIREBASE_TOKEN`.
+
+**After pushing:** Either run `./deploy-all-europe.sh` locally to deploy, or push to `main` to trigger GitHub Actions (if configured).
+
 ## Tech Stack
 
-- **Backend:** FastAPI, MoviePy, OpenCV, Pillow, NumPy
+- **Backend:** FastAPI, MoviePy, OpenCV (headless), Pillow, NumPy
 - **Frontend:** React, TypeScript, Vite, React Router

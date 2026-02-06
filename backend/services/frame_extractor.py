@@ -1,8 +1,5 @@
-"""Frame extraction service using MoviePy and OpenCV."""
+"""Frame extraction service using MoviePy and OpenCV (lazy imports for fast Cloud Run startup)."""
 from pathlib import Path
-import cv2
-import numpy as np
-from moviepy import VideoFileClip
 
 from backend.core.config import OUTPUTS_DIR
 from backend.services.file_manager import ensure_output_dir
@@ -27,6 +24,9 @@ def extract_frames(
     for f in output_dir.glob("frame_*.png"):
         f.unlink()
 
+    from moviepy import VideoFileClip
+    import cv2
+
     clip = VideoFileClip(str(video_path))
     try:
         t = start_time
@@ -46,12 +46,12 @@ def extract_frames(
 
 
 def _process_frame(
-    frame: np.ndarray,
+    frame,
     timestamp: float,
     crop: tuple[int, int, int, int] | None = None,
     overlay_time: bool = True,
     remove_shadows: bool = True,
-) -> np.ndarray:
+):
     """Apply crop, shadow removal, and timestamp overlay."""
     if crop:
         x1, y1, x2, y2 = crop
@@ -63,8 +63,10 @@ def _process_frame(
     return frame
 
 
-def _remove_shadows(frame: np.ndarray) -> np.ndarray:
+def _remove_shadows(frame):
     """Brighten dark areas / reduce shadows."""
+    import cv2
+    import numpy as np
     lab = cv2.cvtColor(frame, cv2.COLOR_RGB2LAB)
     l, a, b = cv2.split(lab)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
@@ -73,8 +75,10 @@ def _remove_shadows(frame: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
 
 
-def _overlay_timestamp(frame: np.ndarray, t: float) -> np.ndarray:
+def _overlay_timestamp(frame, t: float):
     """Draw timestamp on frame."""
+    import cv2
+    import numpy as np
     frame = np.ascontiguousarray(frame.copy())  # OpenCV needs writable array
     minutes = int(t // 60)
     seconds = t % 60

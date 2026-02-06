@@ -18,6 +18,13 @@ steps:
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
+      - '--memory'
+      - '1Gi'
+      - '--cpu'
+      - '2'
+      - '--timeout'
+      - '300'
+      - '--cpu-boost'
 images:
   - 'gcr.io/$PROJECT_ID/video-image-api'
 options:

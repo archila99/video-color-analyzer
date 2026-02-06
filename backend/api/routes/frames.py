@@ -1,10 +1,13 @@
 """Frame extraction API route."""
-from fastapi import APIRouter, File, Form, UploadFile
-from fastapi.responses import Response
-from backend.services.frame_extractor import extract_frames
-from backend.services.file_manager import save_uploaded_file
-from backend.services.zip_service import create_frames_zip
+import shutil
 from pathlib import Path
+
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi.responses import Response
+
+from backend.services.file_manager import save_uploaded_file
+from backend.services.frame_extractor import extract_frames
+from backend.services.zip_service import create_frames_zip
 
 router = APIRouter(prefix="/extract-frames", tags=["frames"])
 
@@ -23,12 +26,19 @@ async def extract_frames_api(
     remove_shadows: bool = Form(True),
 ):
     """Extract frames from video and return as ZIP."""
+    # Limit frames to avoid OOM on Cloud Run (1Gi)
+    max_frames = 500
+    req_frames = int((end_time - start_time) / interval) + 1
+    if req_frames > max_frames:
+        raise HTTPException(400, f"Too many frames ({req_frames}). Max {max_frames}. Use larger interval.")
+
     content = await video.read()
     path = save_uploaded_file(content, video.filename or "video", subdir="videos")
     crop = None
     if all(v is not None for v in (crop_x1, crop_y1, crop_x2, crop_y2)):
         crop = (crop_x1, crop_y1, crop_x2, crop_y2)
 
+    frames_dir = None
     try:
         frames_dir = extract_frames(
             path,
@@ -47,3 +57,5 @@ async def extract_frames_api(
         )
     finally:
         path.unlink(missing_ok=True)
+        if frames_dir and frames_dir.exists():
+            shutil.rmtree(frames_dir, ignore_errors=True)

@@ -332,10 +332,18 @@
   font-size: 0.85rem;
   padding: 0;
   cursor: pointer;
+  border: none;
+  font-family: inherit;
 }
 
 .link-btn:hover {
   text-decoration: underline;
+}
+
+.link-btn.inline {
+  display: inline;
+  margin-top: 0;
+  margin-left: 0.15rem;
 }
 
 .file-drop-zone {
@@ -346,6 +354,8 @@
   text-align: center;
   color: var(--text-muted);
   transition: border-color 0.2s, background 0.2s;
+  min-height: 80px;
+  overflow: hidden;
 }
 
 .file-drop-zone:hover,
@@ -382,10 +392,16 @@
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
+  padding: 0 0.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .file-drop-content p {
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
 }
 
 .error {
@@ -449,4 +465,135 @@
 
 .folder-result .bw {
   color: var(--text-muted);
+}
+
+/* Mobile & responsive */
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .nav-logo {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    text-align: center;
+  }
+
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .main {
+    padding: 1rem;
+  }
+
+  .hero h1 {
+    font-size: 1.4rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .service-cards {
+    gap: 0.75rem;
+  }
+
+  .service-card {
+    padding: 1rem;
+  }
+
+  .service-card h3 {
+    font-size: 1rem;
+  }
+
+  .service-card p {
+    font-size: 0.85rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .card h2 {
+    font-size: 1.05rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .form-group input[type="number"],
+  .form-group input[type="text"] {
+    font-size: 16px; /* prevents iOS zoom on focus */
+    padding: 0.65rem 0.85rem;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    min-height: 44px; /* touch target */
+  }
+
+  .video-extractor .card:last-child .btn,
+  .video-extractor .card:last-child .btn + .btn {
+    width: 100%;
+  }
+
+  .video-extractor .card:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .file-drop-zone {
+    padding: 1.25rem 1rem;
+    min-height: 72px;
+  }
+
+  .file-drop-zone-compact {
+    padding: 1rem;
+    min-height: 64px;
+  }
+
+  .file-drop-content {
+    padding: 0 0.75rem;
+  }
+
+  .file-drop-content p {
+    font-size: 0.9rem;
+  }
+
+  .file-drop-content .link-btn.inline {
+    font-size: 0.9rem;
+  }
+
+  .photo-sorter-actions {
+    flex-direction: column;
+  }
+
+  .photo-sorter-actions .btn {
+    width: 100%;
+  }
+
+  .endpoint-list {
+    font-size: 0.85rem;
+    padding-left: 1rem;
+  }
+
+  .endpoint-list code {
+    font-size: 0.8em;
+    word-break: break-all;
+  }
 }
