@@ -1,0 +1,15 @@
+venv/
+.venv/
+node_modules/
+frontend/
+uploads/
+outputs/
+.git/
+.env
+.env.*
+*.md
+__pycache__/
+*.pyc
+.pytest_cache/
+.idea/
+.vscode/
