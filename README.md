@@ -87,7 +87,13 @@ video-image-processing/
 
 ## Deployment
 
-See [DEPLOY.md](./DEPLOY.md) for Google Cloud, Render, and other clouds.
+**One-command deploy** (Google Cloud, Europe):
+```bash
+./setup-gcp-europe.sh   # first time only
+./deploy-all-europe.sh  # backend + frontend + CORS
+```
+
+See [DEPLOY.md](./DEPLOY.md) for details and GitHub Actions CI/CD.
 
 ## Tech Stack
 

@@ -9,45 +9,53 @@ Deploy backend and frontend separately. Both must be reachable; frontend calls b
 
 ---
 
-## Google Cloud (Cloud Run)
+## Google Cloud (Europe regions)
 
-### Backend
+Project uses **europe-west1** (Belgium). Other options: `europe-west4` (Netherlands), `europe-west9` (Paris).
 
-Uses the project `Dockerfile`. Ensure `Dockerfile` and `.dockerignore` are in the repo root.
+### Quick start (scripts)
 
-1. Build and push image:
-   ```bash
-   gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/video-image-api
-   ```
+**One command** (after setup):
+```bash
+./deploy-all-europe.sh
+```
 
-2. Deploy:
-   ```bash
-   gcloud run deploy video-image-api \
-     --image gcr.io/YOUR_PROJECT_ID/video-image-api \
-     --platform managed \
-     --region us-central1 \
-     --allow-unauthenticated \
-     --set-env-vars CORS_ORIGINS=https://YOUR_FRONTEND_URL
-   ```
+**First-time setup:**
+```bash
+./setup-gcp-europe.sh
+firebase login
+firebase use video-image-processing-eu  # or firebase use --add
+```
 
-3. Copy the service URL (e.g. `https://video-image-api-xxx.run.app`).
+**Individual deploys:**
+```bash
+./deploy-backend-europe.sh
+BACKEND_URL=https://video-image-api-xxx.run.app ./deploy-frontend-europe.sh
+```
 
-### Frontend
+### Manual steps
 
-1. Build with backend URL:
-   ```bash
-   cd frontend
-   VITE_API_URL=https://YOUR_BACKEND_URL npm run build
-   ```
+**Backend** (Cloud Run, europe-west1):
+- Build: `gcloud builds submit --tag gcr.io/PROJECT_ID/video-image-api`
+- Deploy: `gcloud run deploy video-image-api --image gcr.io/PROJECT_ID/video-image-api --region europe-west1 --allow-unauthenticated`
 
-2. Deploy to **Firebase Hosting** (recommended for static):
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   firebase init hosting  # pick frontend/dist as public dir, single-page app: yes
-   firebase deploy
-   ```
-   Or use **Cloud Storage + Load Balancer** for static hosting.
+**Frontend** (Firebase Hosting):
+- Build: `cd frontend && VITE_API_URL=BACKEND_URL npm run build`
+- Deploy: `firebase deploy --only hosting`
+
+### GitHub Actions (CI/CD)
+
+`.github/workflows/deploy-gcp.yml` deploys on push to `main`.
+
+**Secrets** (Settings → Secrets and variables → Actions):
+
+| Secret | Description |
+|--------|-------------|
+| `GCP_PROJECT_ID` | Your GCP project ID (e.g. `video-image-processing-eu`) |
+| `GCP_SA_KEY` | Service account JSON key with Cloud Run + Cloud Build roles |
+| `FIREBASE_TOKEN` | `firebase login:ci` token for Firebase Hosting deploy |
+
+**Alternative:** Cloud Build trigger using `cloudbuild.yaml` (backend only).
 
 ---
 
